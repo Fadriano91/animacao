@@ -1,53 +1,97 @@
-import React from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, Alert, Platform } from 'react-native'
+import React, { useRef, useState } from 'react'
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Platform, Animated } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import Writer from './components/Writer'
 
 const TAMANHO_CIRCULO = 100
 
 
-const Circulo = ({ onPress }) => {
+const Circulo = ({ onPress, animatedValue }) => {
+const animatedBackground = animatedValue.interpolate({
+  inputRange: [0, 0.0001, 0.5, 0.5001, 1],
+  outputRange: ["#F2CDAC", "#F2CDAC","#F2CDAC", "#D3367F", "#D3367F"]
+})
+
+const animatedCirculo = animatedValue.interpolate({
+  inputRange: [0, 0.0001, 0.5, 0.5001, 1],
+  outputRange: ["#D3367F", "#D3367F","#D3367F", "#F2CDAC", "#F2CDAC"]
+})
+
+const animatedText = animatedValue.interpolate({
+  inputRange: [0, 0.5, 1],
+  outputRange: [20, 35, 20]
+})
+
   return (
-    <View style={[StyleSheet.absoluteFillObject, styles.containerCirculo]}>
+    <Animated.View style={[StyleSheet.absoluteFillObject, styles.containerCirculo,{backgroundColor: animatedBackground}]}>
       <Text style={styles.titulo}>Animações em React Native</Text>
       <Writer />
+      
+      <Animated.Text
+      style={{
+        fontSize: animatedText,
+        color: animatedCirculo,
+        margin: 10
+      }}
+      >Frase importante sobre React Native e o conceito de animações</Animated.Text>
+      
+      
+      <Animated.View style={[styles.circulo,{
+        backgroundColor: animatedCirculo,
+        transform: [
+        {
+          rotateY: animatedValue.interpolate({
+            inputRange: [0, 0.5, 1],
+            outputRange: ['0deg', '-180deg', '0deg']
+          })
+        },
+        {
+          scale: animatedValue.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 5, 1]
+        })
+        },
+        {
+          translateX: animatedValue.interpolate({
+            inputRange: [0, 0.5, 1],
+            outputRange: [0, 50, 0]
+          })
+        }
+        ]
+      }]}>
+
       <TouchableOpacity onPress={onPress}>
-        <View style={[styles.circulo]}>
+        <Animated.View style={[styles.circulo,{backgroundColor:{animatedCirculo}}]}>
           <AntDesign name="arrowright" size={28} color={"#8c4227"} />
-        </View>
+        </Animated.View>
       </TouchableOpacity>
-    </View>
+
+      </Animated.View>
+    </Animated.View>
   )
 }
 
 
 export default function App() {
-  const onPress = () => {
-    let mensagem = "Você clicou! 👏"
-    if (Platform.OS === 'web') {
-      alert(mensagem)
-    } else {
-      Alert.alert(
-        'Aviso',
-        mensagem,
-        [{
-          text: 'Cancelar',
-          onPress: () => console.log('Pressionou o cancelar'),
-          style: 'cancel'
-        },
-        {
-          text: 'Ok',
-          onPress: () => console.log('Pressionou o Ok')
-        }], {
-        cancelable: false //Tira o comportamento de cancelar clicando em qualquer lugar
-      })
-    }
-  }
+/*useRef é um hook que retorna um objeto mutável, no qaul a propriedade current 
+  é inicializado com o argumento passado.
+  O objeto retornado persistirá durante todo o ciclo de vida do componente.
+  */
 
+const animatedValue = useRef(new Animated.Value(0)).current
+
+  const onPress = () => {
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false
+    }).start()
+
+  }
 
   return (
     <View style={styles.container}>
-      <Circulo onPress={onPress} />
+      <Circulo onPress={onPress} animatedValue={animatedValue} />
     </View>
   )
 }
