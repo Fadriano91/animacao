@@ -23,7 +23,7 @@ const animatedText = animatedValue.interpolate({
 })
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFillObject, styles.containerCirculo,{backgroundColor: animatedBackground}]}>
+    < Animated.View style={[StyleSheet.absoluteFillObject, styles.containerCirculo,{backgroundColor: animatedBackground}]}>
       <Text style={styles.titulo}>Animações em React Native</Text>
       <Writer />
       
@@ -59,15 +59,27 @@ const animatedText = animatedValue.interpolate({
         }
         ]
       }]}>
-
+      
+      
       <TouchableOpacity onPress={onPress}>
         <Animated.View style={[styles.circulo,{backgroundColor:{animatedCirculo}}]}>
           <AntDesign name="arrowright" size={28} color={"#8c4227"} />
         </Animated.View>
       </TouchableOpacity>
+      </ Animated.View>
 
-      </Animated.View>
+      
+        
+      <TouchableOpacity onPress={onPress}>
+
+      <AntDesign name="sound" size={28} color={"#8c4227"} />
+      </TouchableOpacity>
+
+      
     </Animated.View>
+    
+    
+    
   )
 }
 
@@ -79,14 +91,17 @@ export default function App() {
   */
 
 const animatedValue = useRef(new Animated.Value(0)).current
+const [indice, setIndice] = useState(0)
+
+const animation =(toValue) => Animated.timing(animatedValue, {
+  toValue: toValue,
+  duration: 3000,
+  useNativeDriver: false
+})
 
   const onPress = () => {
-    Animated.timing(animatedValue, {
-      toValue: 1,
-      duration: 3000,
-      useNativeDriver: false
-    }).start()
-
+    setIndice(indice === 1 ? 0 : 1)
+    animation(indice === 1 ? 0 : 1).start()
   }
 
   return (
